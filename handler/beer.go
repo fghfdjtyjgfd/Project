@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"fmt"
-	"math"
+	"os"
 	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
+	"github.com/golang-jwt/jwt/v4"
 
 	"hexTest/core"
 	m "hexTest/model"
@@ -15,7 +15,6 @@ import (
 // //handler adabter/////
 type beerHandler struct {
 	beerServ core.BeerService
-	
 }
 
 func NewBeerHandler(beerServ core.BeerService) *beerHandler {
@@ -23,30 +22,11 @@ func NewBeerHandler(beerServ core.BeerService) *beerHandler {
 }
 
 func (h *beerHandler) GetBeers(c *fiber.Ctx) error {
-	var beers []m.Beer
-
-	sql := "SELECT * FROM testdb.beers"
-
-	if name := c.Query("name"); name != "" {
-		sql = fmt.Sprintf("%s WHERE Name LIKE '%%%s%%' ", sql, name)
+	beers, err := h.beerServ.GetBeers()
+	if err != nil {
+		return c.SendStatus(fiber.StatusBadRequest)
 	}
-
-	page, _ := strconv.Atoi(c.Query("page", "1"))
-	perPage := 10
-	var total int64
-
-	db.Raw(sql).Count(&total)
-
-	sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, perPage, (page-1)*perPage)
-
-	db.Raw(sql).Scan(&beers)
-
-	return c.JSON(fiber.Map{
-		"data":     beers,
-		"total":    total,
-		"page":     page,
-		"lastPage": math.Ceil(float64(total / int64(perPage))),
-	})
+	return c.JSON(beers)
 }
 
 func (h *beerHandler) UpdateBeer(c *fiber.Ctx) error {
@@ -97,4 +77,50 @@ func (h *beerHandler) CreateBeer(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{"message": "created beer successful"})
+}
+
+func (h *beerHandler) Register(c *fiber.Ctx) error {
+	user := new(m.User)
+	if err := c.BodyParser(user); err != nil {
+		return c.SendStatus(fiber.StatusBadRequest)
+	}
+
+	err := h.beerServ.CreateUser(*user)
+	if err != nil {
+		return c.SendStatus(fiber.StatusBadRequest)
+	}
+
+	return c.JSON(fiber.Map{"message": "registed user successful"})
+}
+
+func (h *beerHandler) Login(c *fiber.Ctx) error {
+	user := new(m.User)
+	if err := c.BodyParser(user); err != nil {
+		return c.SendStatus(fiber.StatusBadRequest)
+	}
+	token, err := h.beerServ.LoginUser(*user)
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
+	c.Cookie(&fiber.Cookie{
+		Name:     "jwt",
+		Value:    token,
+		Expires:  time.Now().Add(time.Hour * 72),
+		HTTPOnly: true,
+	})
+
+	return c.JSON(fiber.Map{"message": "login successful"})
+}
+
+func (h *beerHandler) AuthRequired(c *fiber.Ctx) error {
+	cookie := c.Cookies("jwt")
+	jwtSecretKey := os.Getenv("jwtSecretKey")
+
+	token, err := jwt.ParseWithClaims(cookie, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(jwtSecretKey), nil
+	})
+	if err != nil || !token.Valid {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
+	return c.Next()
 }
