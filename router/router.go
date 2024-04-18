@@ -1,7 +1,10 @@
 package router
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/spf13/viper"
 
 	"hexTest/core"
 	"hexTest/handler"
@@ -28,5 +31,5 @@ func NewRouter() {
 	app.Post("/register", beerHandler.Register)
 	app.Post("/login", beerHandler.Login)
 
-	app.Listen(":8000")
+	app.Listen(fmt.Sprintf(":%v", viper.GetInt("app.port")))
 }

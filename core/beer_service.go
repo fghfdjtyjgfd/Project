@@ -64,7 +64,7 @@ func (s *beerService) CreateUser(user m.User) error {
 	if err != nil {
 		log.Println(err)
 	}
-	return nil
+	return err
 }
 
 func (s *beerService) LoginUser(user m.User) (string, error){
