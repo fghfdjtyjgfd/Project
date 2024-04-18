@@ -1,16 +1,21 @@
 package handler
 
 import (
+	"fmt"
+	"math"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 
 	"hexTest/core"
+	m "hexTest/model"
 )
 
-////handler adabter/////
+// //handler adabter/////
 type beerHandler struct {
 	beerServ core.BeerService
+	
 }
 
 func NewBeerHandler(beerServ core.BeerService) *beerHandler {
@@ -18,15 +23,34 @@ func NewBeerHandler(beerServ core.BeerService) *beerHandler {
 }
 
 func (h *beerHandler) GetBeers(c *fiber.Ctx) error {
-	beers, err := h.beerServ.GetBeers()
-	if err != nil {
-		return c.SendStatus(fiber.StatusBadRequest)
+	var beers []m.Beer
+
+	sql := "SELECT * FROM testdb.beers"
+
+	if name := c.Query("name"); name != "" {
+		sql = fmt.Sprintf("%s WHERE Name LIKE '%%%s%%' ", sql, name)
 	}
-	return c.JSON(beers)
+
+	page, _ := strconv.Atoi(c.Query("page", "1"))
+	perPage := 10
+	var total int64
+
+	db.Raw(sql).Count(&total)
+
+	sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", sql, perPage, (page-1)*perPage)
+
+	db.Raw(sql).Scan(&beers)
+
+	return c.JSON(fiber.Map{
+		"data":     beers,
+		"total":    total,
+		"page":     page,
+		"lastPage": math.Ceil(float64(total / int64(perPage))),
+	})
 }
 
 func (h *beerHandler) UpdateBeer(c *fiber.Ctx) error {
-	var beer core.Beer
+	var beer m.Beer
 
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
@@ -60,7 +84,7 @@ func (h *beerHandler) DeleteBeer(c *fiber.Ctx) error {
 }
 
 func (h *beerHandler) CreateBeer(c *fiber.Ctx) error {
-	var beer core.Beer
+	var beer m.Beer
 
 	err := c.BodyParser(&beer)
 	if err != nil {
