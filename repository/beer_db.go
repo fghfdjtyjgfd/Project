@@ -1,11 +1,11 @@
 package repository
 
 import (
-	"fmt"
+	// "fmt"
 	"os"
 	"time"
 
-	"github.com/bxcodec/faker/v3"
+	// "github.com/bxcodec/faker/v3"
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -51,20 +51,9 @@ func (r *beerRepositoryDB) DeleteOne(id int) error {
 }
 
 func (r *beerRepositoryDB) CreateAll(beer m.Beer) error {
-	AAA := m.Distributer{
-		ID: 1,
-		Name: "AAA",
-	}
-	
-	for i := 0; i < 1; i++ {
-		r.db.Create(&m.Beer{
-			Name:     faker.Word(),
-			Type:     faker.Word(),
-			Detail:   faker.Paragraph(),
-			ImageURL: fmt.Sprintf("http://test.com/%s", faker.UUIDDigit()),
-			CompanyID: 1,
-			Distributer: []m.Distributer{AAA},
-		})
+	result := r.db.Create(beer)
+	if result.Error != nil {
+		return result.Error
 	}
 	return nil
 }
