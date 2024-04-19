@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"time"
@@ -34,17 +35,20 @@ func (h *beerHandler) UpdateBeer(c *fiber.Ctx) error {
 
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
+		fmt.Println("kuykuykuy")
 		return c.SendStatus(fiber.StatusBadRequest)
 	}
 
 	if err := c.BodyParser(&beer); err != nil {
+		fmt.Println("kak")
 		return c.SendStatus(fiber.StatusBadRequest)
 	}
 
-	beer.ID = id
+	beer.ID = uint(id)
 
 	err = h.beerServ.UpdateBeer(beer)
 	if err != nil {
+		fmt.Println("kuy")
 		return c.SendStatus(fiber.StatusBadRequest)
 	}
 

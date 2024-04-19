@@ -25,7 +25,7 @@ func NewBeerDB(db *gorm.DB) *beerRepositoryDB {
 func (r *beerRepositoryDB) GetAll() ([]m.Beer, error) {
 	var beers []m.Beer
 
-	result := r.db.Find(&beers)
+	result := r.db.Preload("Company").Find(&beers)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -40,6 +40,7 @@ func (r *beerRepositoryDB) UpdateOne(beer m.Beer) error {
 	return nil
 }
 
+
 func (r *beerRepositoryDB) DeleteOne(id int) error {
 	var beer m.Beer
 	err := r.db.Delete(&beer, id)
@@ -50,12 +51,19 @@ func (r *beerRepositoryDB) DeleteOne(id int) error {
 }
 
 func (r *beerRepositoryDB) CreateAll(beer m.Beer) error {
+	AAA := m.Distributer{
+		ID: 1,
+		Name: "AAA",
+	}
+	
 	for i := 0; i < 1; i++ {
 		r.db.Create(&m.Beer{
 			Name:     faker.Word(),
 			Type:     faker.Word(),
 			Detail:   faker.Paragraph(),
 			ImageURL: fmt.Sprintf("http://test.com/%s", faker.UUIDDigit()),
+			CompanyID: 1,
+			Distributer: []m.Distributer{AAA},
 		})
 	}
 	return nil
@@ -99,3 +107,6 @@ func (r *beerRepositoryDB) LoginUser(user m.User) (string, error) {
 	}
 	return t, nil
 }
+
+
+

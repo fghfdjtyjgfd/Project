@@ -25,7 +25,7 @@ func NewDB() (*gorm.DB, error) {
 	if err != nil {
 		panic(err)
 	}
-	db.AutoMigrate(&m.Beer{}, &m.User{})
+	db.AutoMigrate(&m.Beer{}, &m.User{}, &m.Company{}, &m.Distributer{}, &m.DistributerBeer{})
 
 	return db, nil
 }
