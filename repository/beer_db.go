@@ -27,7 +27,7 @@ func NewBeerDB(db *gorm.DB) *beerRepositoryDB {
 func (r *beerRepositoryDB) GetAll() ([]m.Beer, error) {
 	var beers []m.Beer
 
-	result := r.db.Preload("Company").Find(&beers)
+	result := r.db.Preload("Distributer").Preload("Company").Find(&beers)
 	if result.Error != nil {
 		return nil, result.Error
 	}
