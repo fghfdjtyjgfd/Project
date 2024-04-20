@@ -18,14 +18,17 @@ func NewDB() (*gorm.DB, error) {
 		viper.GetString("db.password"),
 		viper.GetString("db.host"),
 		viper.GetInt("db.port"),
-		viper.GetString("db.database"),
+		viper.GetString("db.name"),
 	)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
-	db.AutoMigrate(&m.Beer{}, &m.User{}, &m.Company{}, &m.Distributer{}, &m.DistributerBeer{})
+
+	if viper.GetBool("db.auto_migration") {
+		db.AutoMigrate(&m.Beer{}, &m.User{}, &m.Company{}, &m.Distributer{}, &m.DistributerBeer{})
+	}
 
 	return db, nil
 }
@@ -33,7 +36,7 @@ func NewDB() (*gorm.DB, error) {
 func InitConfig() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
+	viper.AddConfigPath("configs")
 
 	err := viper.ReadInConfig()
 	if err != nil {
