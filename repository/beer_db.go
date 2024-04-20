@@ -16,7 +16,8 @@ import (
 
 // //repositiry adabter/////
 type beerRepositoryDB struct {
-	db *gorm.DB
+	db   *gorm.DB
+	repo Repo
 }
 
 func NewBeerDB(db *gorm.DB) *beerRepositoryDB {
@@ -56,22 +57,22 @@ func (r *beerRepositoryDB) CreateAll(beer m.Beer) error {
 		ID:   uint(randomNumber),
 		Name: faker.Word(),
 	}
-	err := r.db.Create(&company)
-	if err.Error != nil {
-		return err.Error
+	err := r.repo.Create(r.db, &company)
+	if err != nil {
+		return err
 	}
 
 	distributer := m.Distributer{
 		ID:   uint(randomNumber),
 		Name: faker.Word(),
 	}
-	err = r.db.Create(&distributer)
-	if err.Error != nil {
-		return err.Error
+	err = r.repo.Create(r.db, &distributer)
+	if err != nil {
+		return err
 	}
 
 	for i := 0; i < 1; i++ {
-		r.db.Create(&m.Beer{
+		_ = r.repo.Create(r.db, &m.Beer{
 			Name:        faker.Word(),
 			Type:        faker.Word(),
 			Detail:      faker.Paragraph(),
@@ -90,9 +91,9 @@ func (r *beerRepositoryDB) CreateUser(user m.User) error {
 		return err
 	}
 	user.Password = string(hashedPassword)
-	result := r.db.Create(user)
-	if result.Error != nil {
-		return result.Error
+	err = r.repo.Create(r.db, &user)
+	if err != nil {
+		return err
 	}
 	return nil
 }

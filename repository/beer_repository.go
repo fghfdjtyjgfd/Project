@@ -1,9 +1,10 @@
 package repository
 
+import (
+	m "hexTest/model"
+)
 
-import m "hexTest/model"
-
-/////repository port/////
+// ///repository port/////
 type BeerRepository interface {
 	GetAll() ([]m.Beer, error)
 	UpdateOne(beer m.Beer) error
@@ -22,4 +23,9 @@ type BeerRepository interface {
 	DeleteOneCom(id int) error
 	CreateCom(company m.Company) error
 
+	// // Core CRUD
+	// Create(db *gorm.DB, i interface{}) error
+	// FindOneByID(db *gorm.DB, id uint, i interface{}) error
+	// Update(db *gorm.DB, i interface{}) error
+	// Delete(db *gorm.DB, i interface{}) error
 }
