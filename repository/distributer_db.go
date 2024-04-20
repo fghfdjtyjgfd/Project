@@ -32,7 +32,7 @@ func (r *beerRepositoryDB) DeleteOneDis(id int) error {
 }
 
 func (r *beerRepositoryDB) CreateDis(distributers m.Distributer) error {
-	err := r.db.Create(distributers)
+	err := r.db.Create(&distributers)
 	if err != nil {
 		return nil
 	}

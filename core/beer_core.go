@@ -7,7 +7,6 @@ import (
 	repo "hexTest/repository"
 )
 
-
 // //service adabter////
 type beerService struct {
 	beerRepo repo.BeerRepository
@@ -58,7 +57,7 @@ func (s *beerService) CreateUser(user m.User) error {
 	return err
 }
 
-func (s *beerService) LoginUser(user m.User) (string, error){
+func (s *beerService) LoginUser(user m.User) (string, error) {
 	t, err := s.beerRepo.LoginUser(user)
 	if err != nil {
 		log.Println(err)

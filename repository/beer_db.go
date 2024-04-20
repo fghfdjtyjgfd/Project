@@ -41,7 +41,6 @@ func (r *beerRepositoryDB) UpdateOne(beer m.Beer) error {
 	return nil
 }
 
-
 func (r *beerRepositoryDB) DeleteOne(id int) error {
 	var beer m.Beer
 	err := r.db.Delete(&beer, id)
@@ -53,29 +52,35 @@ func (r *beerRepositoryDB) DeleteOne(id int) error {
 
 func (r *beerRepositoryDB) CreateAll(beer m.Beer) error {
 	randomNumber := rand.Intn(101)
-	
 	company := m.Company{
-		ID: uint(randomNumber),
+		ID:   uint(randomNumber),
 		Name: faker.Word(),
 	}
-	_ = r.CreateCom(company)
+	err := r.db.Create(&company)
+	if err.Error != nil {
+		return err.Error
+	}
 
 	distributer := m.Distributer{
-		ID: uint(randomNumber),
+		ID:   uint(randomNumber),
 		Name: faker.Word(),
 	}
-	_ = r.CreateDis(distributer)
-	
+	err = r.db.Create(&distributer)
+	if err.Error != nil {
+		return err.Error
+	}
+
 	for i := 0; i < 1; i++ {
 		r.db.Create(&m.Beer{
-			Name:     faker.Word(),
-			Type:     faker.Word(),
-			Detail:   faker.Paragraph(),
-			ImageURL: fmt.Sprintf("http://test.com/%s", faker.UUIDDigit()),
-			CompanyID: company.ID,
+			Name:        faker.Word(),
+			Type:        faker.Word(),
+			Detail:      faker.Paragraph(),
+			ImageURL:    fmt.Sprintf("http://test.com/%s", faker.UUIDDigit()),
+			CompanyID:   company.ID,
 			Distributer: []m.Distributer{distributer},
 		})
 	}
+
 	return nil
 }
 
@@ -117,6 +122,3 @@ func (r *beerRepositoryDB) LoginUser(user m.User) (string, error) {
 	}
 	return t, nil
 }
-
-
-
