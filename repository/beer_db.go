@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"time"
 
@@ -51,10 +52,19 @@ func (r *beerRepositoryDB) DeleteOne(id int) error {
 }
 
 func (r *beerRepositoryDB) CreateAll(beer m.Beer) error {
-	AAA := m.Distributer{
-		ID: 1,
-		Name: "AAA",
+	randomNumber := rand.Intn(101)
+	
+	company := m.Company{
+		ID: uint(randomNumber),
+		Name: faker.Word(),
 	}
+	_ = r.CreateCom(company)
+
+	distributer := m.Distributer{
+		ID: uint(randomNumber),
+		Name: faker.Word(),
+	}
+	_ = r.CreateDis(distributer)
 	
 	for i := 0; i < 1; i++ {
 		r.db.Create(&m.Beer{
@@ -62,8 +72,8 @@ func (r *beerRepositoryDB) CreateAll(beer m.Beer) error {
 			Type:     faker.Word(),
 			Detail:   faker.Paragraph(),
 			ImageURL: fmt.Sprintf("http://test.com/%s", faker.UUIDDigit()),
-			CompanyID: 1,
-			Distributer: []m.Distributer{AAA},
+			CompanyID: company.ID,
+			Distributer: []m.Distributer{distributer},
 		})
 	}
 	return nil
