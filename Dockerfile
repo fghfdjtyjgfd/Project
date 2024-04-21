@@ -1,9 +1,13 @@
-FROM golang:1.22.1-alpine AS builder
+FROM golang:1.22.2-bullseye as builder
 WORKDIR /app
-COPY . .
-RUN GOOS=linux go build -o main .
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . . 
+RUN go build -o main .
 
-FROM alpine:3.19 as runner
+# ======================
+FROM alpine:3.18 AS final
+WORKDIR /app
 COPY --from=builder /app/main /app/main
-ADD /configs /configs 
-CMD ["/app/main"]
+EXPOSE 8000
+CMD ["./main"]
