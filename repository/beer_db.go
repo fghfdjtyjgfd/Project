@@ -2,7 +2,7 @@ package repository
 
 import (
 	"fmt"
-	"math/rand"
+	// "math/rand"
 	"os"
 	"time"
 
@@ -52,9 +52,9 @@ func (r *beerRepositoryDB) DeleteOne(id int) error {
 }
 
 func (r *beerRepositoryDB) CreateAll(beer m.Beer) error {
-	randomNumber := rand.Intn(101)
+	// randomNumber := rand.Intn(101)
 	company := m.Company{
-		ID:   uint(randomNumber),
+		// ID:   uint(randomNumber),
 		Name: faker.Word(),
 	}
 	err := r.repo.Create(r.db, &company)
@@ -63,7 +63,7 @@ func (r *beerRepositoryDB) CreateAll(beer m.Beer) error {
 	}
 
 	distributer := m.Distributer{
-		ID:   uint(randomNumber),
+		// ID:   uint(randomNumber),
 		Name: faker.Word(),
 	}
 	err = r.repo.Create(r.db, &distributer)

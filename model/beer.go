@@ -1,7 +1,10 @@
 package model
 
+
+
+
 type Beer struct {
-	ID          uint
+	Model
 	Name        string `json:"name"`
 	Type        string `json:"type"`
 	Detail      string `json:"detail"`
@@ -12,12 +15,12 @@ type Beer struct {
 }
 
 type Company struct {
-	ID   uint
+	Model
 	Name string `gorm:"unique"`
 }
 
 type Distributer struct {
-	ID   uint
+	Model
 	Name string `gorm:"unique"`
 	Beer []Beer `gorm:"many2many:Distributer_Beer;"`
 }
