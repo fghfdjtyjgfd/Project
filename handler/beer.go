@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 	"time"
@@ -35,12 +34,10 @@ func (h *beerHandler) UpdateBeer(c *fiber.Ctx) error {
 
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
-		fmt.Println("kuykuykuy")
 		return c.SendStatus(fiber.StatusBadRequest)
 	}
 
 	if err := c.BodyParser(&beer); err != nil {
-		fmt.Println("kak")
 		return c.SendStatus(fiber.StatusBadRequest)
 	}
 
@@ -48,7 +45,6 @@ func (h *beerHandler) UpdateBeer(c *fiber.Ctx) error {
 
 	err = h.beerServ.UpdateBeer(beer)
 	if err != nil {
-		fmt.Println("kuy")
 		return c.SendStatus(fiber.StatusBadRequest)
 	}
 
@@ -80,6 +76,14 @@ func (h *beerHandler) CreateBeer(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
+	file, err := c.FormFile("upload")
+	if err != nil {
+		return c.JSON(fiber.Map{"message": "created successful, but no file uploaded"})
+	}
+	err = c.SaveFile(file, "images/"+file.Filename)
+	if err != nil {
+		return err
+	}
 	return c.JSON(fiber.Map{"message": "created beer successful"})
 }
 
