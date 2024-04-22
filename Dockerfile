@@ -7,5 +7,5 @@ RUN go build -o main .
 FROM alpine:3.14
 WORKDIR /app
 COPY --from=builder /app/main .
-COPY /configs /app/configs 
+COPY /configs /app/configs
 CMD ["/app/main"]
