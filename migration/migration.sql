@@ -23,7 +23,7 @@ CREATE TABLE `users` (
   `password` longtext DEFAULT NULL
 );
 
-CREATE TABLE `companys` (
+CREATE TABLE `companies` (
   `id` serial not null
 		constraint company_pk
 			primary key,
