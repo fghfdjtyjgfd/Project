@@ -2,7 +2,7 @@ package repository
 
 import (
 	"fmt"
-	// "math/rand"
+	"math"
 	"os"
 	"time"
 
@@ -24,28 +24,31 @@ func NewBeerDB(db *gorm.DB) *beerRepositoryDB {
 	return &beerRepositoryDB{db: db}
 }
 
-func (r *beerRepositoryDB) GetAll() ([]m.Beer, error) {
-	var beers []m.Beer
-
-	result := r.db.Preload("Distributer").Preload("Company").Find(&beers)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return beers, nil
-}
-
-func (r *beerRepositoryDB) GetAll2(page int) ([]m.Beer, error) {
+func (r *beerRepositoryDB) GetAll(page int) ([]m.Beer, error) {
 	var beers []m.Beer
 
 	perPage := 10
 	offSet := (page - 1) * perPage
 
-	result := r.db.Limit(perPage).Offset(offSet).Find(&beers)
+	result := r.db.Preload("Distributer").Preload("Company").Limit(perPage).Offset(offSet).Find(&beers)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return beers, nil
 }
+
+func (r *beerRepositoryDB) TotalPages() (int, error) {
+	var totalRows int64
+	perPage := 10
+	result := r.db.Model(&m.Beer{}).Count(&totalRows)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	totalPages := math.Ceil(float64(totalRows) / float64(perPage))
+
+	return int(totalPages), nil
+} 
+
 
 func (r *beerRepositoryDB) UpdateOne(beer m.Beer) error {
 	err := r.db.Save(&beer)

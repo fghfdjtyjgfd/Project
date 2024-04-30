@@ -6,8 +6,8 @@ import (
 
 // //service port/////
 type BeerService interface {
-	GetBeers() ([]m.Beer, error)
-	GetBeers2(page int) ([]m.Beer, error)
+	GetBeers(page int) ([]m.Beer, error)
+	TotalPages() (int, error)
 	UpdateBeer(beer m.Beer) error
 	DeleteBeer(id int) error
 	CreateBeer(beer m.Beer) error

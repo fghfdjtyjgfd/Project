@@ -16,8 +16,8 @@ func NewBeerService(beerRepo repo.BeerRepository) *beerService {
 	return &beerService{beerRepo: beerRepo}
 }
 
-func (s *beerService) GetBeers() ([]m.Beer, error) {
-	beers, err := s.beerRepo.GetAll()
+func (s *beerService) GetBeers(page int) ([]m.Beer, error) {
+	beers, err := s.beerRepo.GetAll(page)
 	if err != nil {
 		log.Println(err)
 	}
@@ -25,13 +25,15 @@ func (s *beerService) GetBeers() ([]m.Beer, error) {
 	return beers, nil
 }
 
-func (s *beerService) GetBeers2(page int) ([]m.Beer, error) {
-	beers, err := s.beerRepo.GetAll2(page)
+func (s *beerService) TotalPages() (int, error) {
+	totalPages, err := s.TotalPages()
 	if err != nil {
 		log.Println(err)
 	}
-	return beers, nil
+	return totalPages, nil
 }
+
+
 
 func (s *beerService) UpdateBeer(beer m.Beer) error {
 	err := s.beerRepo.UpdateOne(beer)

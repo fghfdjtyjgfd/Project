@@ -25,7 +25,7 @@ func NewRouter() {
 	///middleware///
 	app.Use("/beers", beerHandler.AuthRequired)
 	///beer///
-	app.Get("/beers/:page", beerHandler.GetInPage)
+	app.Get("/beers/:page", beerHandler.GetBeers)
 	app.Put("/beers/:id", beerHandler.UpdateBeer)
 	app.Delete("/beers/:id", beerHandler.DeleteBeer)
 	app.Post("/beers", beerHandler.CreateBeer)

@@ -7,39 +7,25 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+
 	// "gorm.io/gorm"
 
 	"hexTest/core"
 	m "hexTest/model"
-	u "hexTest/utils"
 )
 
 // //handler adabter/////
 type beerHandler struct {
 	beerServ core.BeerService
-	
 }
 
 func NewBeerHandler(beerServ core.BeerService) *beerHandler {
-	return &beerHandler{beerServ: beerServ,}
+	return &beerHandler{beerServ: beerServ}
 }
-
-
 
 func (h *beerHandler) GetBeers(c *fiber.Ctx) error {
-	beers, err := h.beerServ.GetBeers()
-	if err != nil {
-		return c.SendStatus(fiber.StatusBadRequest)
-	}
-	return c.JSON(beers)
-}
-
-func (h *beerHandler) GetInPage(c *fiber.Ctx) error {
-	// var beers []m.Beer
 
 	page := 1
-	perPage := 10
-	
 	pageStr := c.Params("page")
 	if pageStr != "" {
 		var err error
@@ -48,21 +34,18 @@ func (h *beerHandler) GetInPage(c *fiber.Ctx) error {
 			return fiber.NewError(fiber.StatusBadRequest, "Invalid page number")
 		}
 	}
-	beers, err := h.beerServ.GetBeers2(page)
+
+	beers, err := h.beerServ.GetBeers(page)
 	if err != nil {
 		return c.SendStatus(fiber.StatusBadRequest)
 	}
-	// offSet := (page - 1) * perPage
-
-	// result := h.db.Limit(perPage).Offset(offSet).Find(&beers)
-	// if result.Error != nil {
-	// 	return fiber.NewError(fiber.StatusInternalServerError, "Failed to retrieve beers")
-	// }
-
-	pagination := u.GetPaginationData(page, perPage, m.Beer{})
 	return c.JSON(fiber.Map{
-		"Beers":       beers,
-		"Pagination": pagination,
+		"Beers": beers,
+		"PageDetail": m.PaginationData{
+			NextPage:     page + 1,
+			PreviousPage: page - 1,
+			CurrentPage:  page,
+		},
 	})
 }
 

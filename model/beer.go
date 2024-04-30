@@ -32,3 +32,9 @@ type DistributerBeer struct {
 	Distributer   Distributer
 }
 
+type PaginationData struct {
+	NextPage     int
+	PreviousPage int
+	CurrentPage  int
+
+}
