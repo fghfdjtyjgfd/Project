@@ -25,6 +25,14 @@ func (s *beerService) GetBeers() ([]m.Beer, error) {
 	return beers, nil
 }
 
+func (s *beerService) GetBeers2(page int) ([]m.Beer, error) {
+	beers, err := s.beerRepo.GetAll2(page)
+	if err != nil {
+		log.Println(err)
+	}
+	return beers, nil
+}
+
 func (s *beerService) UpdateBeer(beer m.Beer) error {
 	err := s.beerRepo.UpdateOne(beer)
 	if err != nil {

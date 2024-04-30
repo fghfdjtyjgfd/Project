@@ -34,6 +34,19 @@ func (r *beerRepositoryDB) GetAll() ([]m.Beer, error) {
 	return beers, nil
 }
 
+func (r *beerRepositoryDB) GetAll2(page int) ([]m.Beer, error) {
+	var beers []m.Beer
+
+	perPage := 10
+	offSet := (page - 1) * perPage
+
+	result := r.db.Limit(perPage).Offset(offSet).Find(&beers)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return beers, nil
+}
+
 func (r *beerRepositoryDB) UpdateOne(beer m.Beer) error {
 	err := r.db.Save(&beer)
 	if err != nil {

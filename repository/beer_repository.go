@@ -7,6 +7,7 @@ import (
 // ///repository port/////
 type BeerRepository interface {
 	GetAll() ([]m.Beer, error)
+	GetAll2(page int) ([]m.Beer, error)
 	UpdateOne(beer m.Beer) error
 	DeleteOne(id int) error
 	CreateAll(beer m.Beer) error

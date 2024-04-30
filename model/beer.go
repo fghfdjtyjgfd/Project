@@ -31,3 +31,4 @@ type DistributerBeer struct {
 	DistributerID uint
 	Distributer   Distributer
 }
+
